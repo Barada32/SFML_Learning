@@ -81,7 +81,7 @@ int main()
 
 			currentframe += 0.005 * time;//переменная для прохождения по кадрам переменная доходит до 6 
 			if (currentframe > 6)currentframe -= 6;//если пришли к кадру 6 то возвращаемся назад
-			herosprite.setTextureRect(sf::IntRect(40 * int(currentframe), 0, 40, 50));/*проходимся по координатам Х нашего прямоугольника текстуры
+			herosprite.setTextureRect(sf::IntRect(40 * int(currentframe), 245, 40, 50));/*проходимся по координатам Х нашего прямоугольника текстуры
 			получается начинаем рисование с когда currentframe доходит до одного начинается новый кадр и т.д */
 			herosprite.move(-0.1 * time, 0);}//происходит само движение персонажа влево
 
