@@ -64,25 +64,25 @@ int main()
 #endif // TELEPORT_HERO
 
 
-#ifdef MOVE_KEYBOARD_MOUSE
+#ifdef MOVE_KEYBOARD_MOUSE 
 
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right) || sf::Keyboard::isKeyPressed(sf::Keyboard::D))
 		{
-			//herosprite.setTextureRect(sf::IntRect(0, 245, 35, 50));//начало отсчета х,у,ширина,высота.
-
 			currentframe += 0.005 * time;//переменная для прохождения по кадрам переменная доходит до 6 
 			if (currentframe > 6)currentframe -= 6;//если пришли к кадру 6 то возвращаемся назад
 			herosprite.setTextureRect(sf::IntRect(40  * int(currentframe), 245, 40, 50));/*проходимся по координатам Х нашего прямоугольника текстуры
 			получается начинаем рисование с когда currentframe доходит до одного начинается новый кадр и т.д */
-			herosprite.move(0.1 * time, 0);//происходит само движение персонажа влево
+			herosprite.move(0.1 * time, 0);//происходит само движение персонажа вправо
 		}
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left) || sf::Keyboard::isKeyPressed(sf::Keyboard::A))
-		{ //herosprite.setTextureRect(sf::IntRect(0, 245, 35, 50));//начало отсчета х,у,ширина,высота.
-
+		{  
 			currentframe += 0.005 * time;//переменная для прохождения по кадрам переменная доходит до 6 
 			if (currentframe > 6)currentframe -= 6;//если пришли к кадру 6 то возвращаемся назад
-			herosprite.setTextureRect(sf::IntRect(40 * int(currentframe)+40, 245, -40, 50));/*проходимся по координатам Х нашего прямоугольника текстуры
-			получается начинаем рисование с когда currentframe доходит до одного начинается новый кадр и т.д */
+			herosprite.setTextureRect(sf::IntRect(40 * int(currentframe)+40, 245, -40, 50));
+			/*начало отсчета х,у,ширина,высота.
+			проходимся по координатам Х нашего прямоугольника текстуры
+			получается начинаем рисование с когда currentframe доходит до одного начинается новый кадр и т.д
+			*/
 			herosprite.move(-0.1 * time, 0);}//происходит само движение персонажа влево
 
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up) || sf::Keyboard::isKeyPressed(sf::Keyboard::W)) { herosprite.move(0, -0.1 * time); }
