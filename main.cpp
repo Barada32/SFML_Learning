@@ -1,6 +1,7 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/Audio.hpp>
 #include<iostream>
+#include <string>
 using std::cin;
 using std::cout;
 using std::endl;
@@ -9,6 +10,45 @@ using std::endl;
 #define MOVE_KEYBOARD_MOUSE
 #define CREATE_SPRITE
 #define VARIABLES
+
+
+class Player {//класс игрока
+public:
+	float x, y, w, h, dx, dy, speed = 0;/*координаты игрока,высота,ширина,ускорение ускорение отрицательное по x это лево по у это вверх ,скорость*/
+	int dir = 0;//направление движения от нуля до 3
+	sf::String File;//файл с расширением 
+	sf::Image image;//sfml изображение
+	sf::Texture texture;//сфмл текстура
+	sf::Sprite sprite;//сфмл спрайт
+
+	Player(sf::String F, int X, int Y, float W, float H) {/*конструктор с параметрами для класса Player.
+		При создании обьекта мы будем задавать имя файла координаты */
+		File = F;//имя файла + расширение
+		w = W; h = H;//ширина высота
+		image.loadFromFile("images/" + File);/* вставляем в image наше изображение вместо file
+		мы передадим то что пропишем пр создании обьекта */
+
+		texture.loadFromImage(image);//закидываем изображение в текстуру
+		sprite.setTexture(texture);//заливаем спрайт с текстурой
+		x = X; y = Y;//координаты появления спрайта
+		sprite.setTextureRect(sf::IntRect(w, h, w, h));//задаем спрайту один треугольниик
+	}
+
+	void update(float time) //функция оживления обьекта класса работает бесконечно пока открыто окно
+
+	{
+
+	}
+
+
+};
+
+
+
+
+
+
+
 int main()
 {
 	sf::RenderWindow window(sf::VideoMode(640, 480), "SFML_Learning!"/*,sf::Style::Fullscreen*/);//класс RenderWindow создает  окно где VideoMode задает расширение
