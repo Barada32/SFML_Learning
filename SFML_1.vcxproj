@@ -150,6 +150,14 @@
     <None Include="sfml-window-2.dll" />
     <None Include="sfml-window-d-2.dll" />
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="view.h" />
+    <ClInclude Include="map.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="images\hero.png" />
+    <Image Include="images\map.png" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
