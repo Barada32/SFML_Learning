@@ -52,12 +52,12 @@ public:
 
 int main()
 {
-	RenderWindow window(sf::VideoMode(640, 480), "Lesson 8. kychka-pc.ru");
+	RenderWindow window(sf::VideoMode(640, 480), "Lesson 8");
 
 	float CurrentFrame = 0;//хранит текущий кадр
 	Clock clock;
 
-	Player p("hero.png", 250, 250, 96.0, 96.0);//создаем объект p класса player,задаем "hero.png" как имя файла+расширение, далее координата Х,У, ширина, высота.
+	Player p("hero.png", 250, 250, 40.0, 50.0);//создаем объект p класса player,задаем "hero.png" как имя файла+расширение, далее координата Х,У, ширина, высота.
 
 	while (window.isOpen())
 	{
@@ -80,14 +80,14 @@ int main()
 			p.dir = 1; p.speed = 0.1;//dir =1 - направление вверх, speed =0.1 - скорость движения. Заметьте - время мы уже здесь ни на что не умножаем и нигде не используем каждый раз
 			CurrentFrame += 0.005 * time;
 			if (CurrentFrame > 3) CurrentFrame -= 3;
-			p.sprite.setTextureRect(IntRect(96 * int(CurrentFrame), 96, 96, 96)); //через объект p класса player меняем спрайт, делая анимацию (используя оператор точку)
+			p.sprite.setTextureRect(IntRect(40 * int(CurrentFrame), 96, 40,50)); //через объект p класса player меняем спрайт, делая анимацию (используя оператор точку)
 		}
 
 		if ((Keyboard::isKeyPressed(Keyboard::Right) || (Keyboard::isKeyPressed(Keyboard::D)))) {
 			p.dir = 0; p.speed = 0.1;//направление вправо, см выше
 			CurrentFrame += 0.005 * time;
 			if (CurrentFrame > 3) CurrentFrame -= 3;
-			p.sprite.setTextureRect(IntRect(96 * int(CurrentFrame), 192, 96, 96));  //через объект p класса player меняем спрайт, делая анимацию (используя оператор точку)
+			p.sprite.setTextureRect(IntRect(40 * int(CurrentFrame), 192, 96, 96));  //через объект p класса player меняем спрайт, делая анимацию (используя оператор точку)
 		}
 
 		if ((Keyboard::isKeyPressed(Keyboard::Up) || (Keyboard::isKeyPressed(Keyboard::W)))) {
