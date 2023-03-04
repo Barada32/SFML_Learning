@@ -1,145 +1,118 @@
+///////////////////////Урок 8////////////////////////////////////
+
+#include <iostream> 
 #include <SFML/Graphics.hpp>
-#include <SFML/Audio.hpp>
-#include<iostream>
-#include <string>
-using std::cin;
-using std::cout;
-using std::endl;
-//#define TELEPOR_HERO
-#define TIME_BINDING
-#define MOVE_KEYBOARD_MOUSE
-#define CREATE_SPRITE
-#define VARIABLES
 
 
-class Player {//класс игрока
+using namespace sf;
+
+
+
+////////////////////////////////////////////////////КЛАСС ИГРОКА////////////////////////
+class Player { // класс Игрока
 public:
-	float x, y, w, h, dx, dy, speed = 0;/*координаты игрока,высота,ширина,ускорение ускорение отрицательное по x это лево по у это вверх ,скорость*/
-	int dir = 0;//направление движения от нуля до 3
-	sf::String File;//файл с расширением 
-	sf::Image image;//sfml изображение
-	sf::Texture texture;//сфмл текстура
-	sf::Sprite sprite;//сфмл спрайт
+	float x, y, w, h, dx, dy, speed = 0; //координаты игрока х и у, высота ширина, ускорение (по х и по у), сама скорость
+	int dir = 0; //направление (direction) движения игрока
+	String File; //файл с расширением
+	Image image;//сфмл изображение
+	Texture texture;//сфмл текстура
+	Sprite sprite;//сфмл спрайт
 
-	Player(sf::String F, int X, int Y, float W, float H) {/*конструктор с параметрами для класса Player.
-		При создании обьекта мы будем задавать имя файла координаты */
-		File = F;//имя файла + расширение
-		w = W; h = H;//ширина высота
-		image.loadFromFile("images/" + File);/* вставляем в image наше изображение вместо file
-		мы передадим то что пропишем пр создании обьекта */
-
-		texture.loadFromImage(image);//закидываем изображение в текстуру
-		sprite.setTexture(texture);//заливаем спрайт с текстурой
-		x = X; y = Y;//координаты появления спрайта
-		sprite.setTextureRect(sf::IntRect(w, h, w, h));//задаем спрайту один треугольниик
+	Player(String F, float X, float Y, float W, float H) {  //Конструктор с параметрами(формальными) для класса Player. При создании объекта класса мы будем задавать имя файла, координату Х и У, ширину и высоту
+		File = F;//имя файла+расширение
+		w = W; h = H;//высота и ширина
+		image.loadFromFile("images/" + File);//запихиваем в image наше изображение вместо File мы передадим то, что пропишем при создании объекта. В нашем случае "hero.png" и получится запись идентичная 	image.loadFromFile("images/hero/png");
+		image.createMaskFromColor(Color(41, 33, 59));//убираем ненужный темно-синий цвет, эта тень мне показалась не красивой.
+		texture.loadFromImage(image);//закидываем наше изображение в текстуру
+		sprite.setTexture(texture);//заливаем спрайт текстурой
+		x = X; y = Y;//координата появления спрайта
+		sprite.setTextureRect(IntRect(0, 0, w, h));  //Задаем спрайту один прямоугольник для вывода одного льва, а не кучи львов сразу. IntRect - приведение типов
 	}
 
-	void update(float time) //функция оживления обьекта класса работает бесконечно пока открыто окно
 
+
+	void update(float time) //функция "оживления" объекта класса. update - обновление. принимает в себя время SFML , вследствие чего работает бесконечно, давая персонажу движение.
 	{
+		switch (dir)//реализуем поведение в зависимости от направления. (каждая цифра соответствует направлению)
+		{
+		case 0: dx = speed; dy = 0;   break;//по иксу задаем положительную скорость, по игреку зануляем. получаем, что персонаж идет только вправо
+		case 1: dx = -speed; dy = 0;   break;//по иксу задаем отрицательную скорость, по игреку зануляем. получается, что персонаж идет только влево
+		case 2: dx = 0; dy = speed;   break;//по иксу задаем нулевое значение, по игреку положительное. получается, что персонаж идет только вниз
+		case 3: dx = 0; dy = -speed;   break;//по иксу задаем нулевое значение, по игреку отрицательное. получается, что персонаж идет только вверх
+		}
 
+		x += dx * time;//то движение из прошлого урока. наше ускорение на время получаем смещение координат и как следствие движение
+		y += dy * time;//аналогично по игреку
+
+		speed = 0;//зануляем скорость, чтобы персонаж остановился.
+		sprite.setPosition(x, y); //выводим спрайт в позицию x y , посередине. бесконечно выводим в этой функции, иначе бы наш спрайт стоял на месте.
 	}
-
-
 };
-
-
-
-
-
 
 
 int main()
 {
-	sf::RenderWindow window(sf::VideoMode(640, 480), "SFML_Learning!"/*,sf::Style::Fullscreen*/);//класс RenderWindow создает  окно где VideoMode задает расширение
+	RenderWindow window(sf::VideoMode(640, 480), "Lesson 8. kychka-pc.ru");
 
+	float CurrentFrame = 0;//хранит текущий кадр
+	Clock clock;
 
-#ifdef CREATE_SPRITE
-	sf::Image heroimage;//create object Image
-	heroimage.loadFromFile("images/hero.png");//load file hero to object heroimage
-	heroimage.createMaskFromColor(sf::Color(0, 0, 0));//RGB filter of transparent(прозрачный) backside from file of hero.png
-	//if backside of picture is not transparent this function can do this
+	Player p("hero.png", 250, 250, 96.0, 96.0);//создаем объект p класса player,задаем "hero.png" как имя файла+расширение, далее координата Х,У, ширина, высота.
 
-	sf::Texture herotexture;//create texture
-	herotexture.loadFromImage(heroimage);//transfer to texture image from herimage
-
-	sf::Sprite herosprite;//create Sprite
-	herosprite.setTexture(herotexture);//transfer to herosprite image from herotexture
-	herosprite.setTextureRect(sf::IntRect(0, 245, 40, 50));//начало отсчета х,у,ширина,высота.
-	float currentframe = 0;//хранит переменную текущего кадра
-#endif // CREATE_SPRITE 
-
-#ifdef VARIABLES
-	herosprite.setPosition(100, 50);//set a coordinates to start position 
-	float heroteleporttimer = 0;//teleport  hero after 3 second
-	sf::Clock clock;//create variable  of time, to binding(привязка) speed to time and not to use processor or loading
-
-
-#endif // VARIABLES
-
-	while (window.isOpen())//пока окно открыто работает событие.Это обязательное окно
+	while (window.isOpen())
 	{
-#ifdef TIME_BINDING
 
-		float time = clock.getElapsedTime().asMicroseconds();//get a last time in microseconds
-		clock.restart();//restart time
-		time /= 700;//speed of game   
-
-#endif // TIME_BINDING
+		float time = clock.getElapsedTime().asMicroseconds();
+		clock.restart();
+		time = time / 800;
 
 
-		sf::Event event;//обязательный код для закрытия окна 
+		sf::Event event;
 		while (window.pollEvent(event))
 		{
 			if (event.type == sf::Event::Closed)
 				window.close();
 		}
-#ifdef TELEPORT_HERO
-		heroteleporttimer += time;//add time to variable time
-		if (heroteleporttimer > 3000)//after 3000 seconds change position of hero and zero timer
-		{
-			herosprite.setPosition(0, 120);
-			heroteleporttimer = 0;
+
+
+		///////////////////////////////////////////Управление персонажем с анимацией////////////////////////////////////////////////////////////////////////
+		if ((Keyboard::isKeyPressed(Keyboard::Left) || (Keyboard::isKeyPressed(Keyboard::A)))) {
+			p.dir = 1; p.speed = 0.1;//dir =1 - направление вверх, speed =0.1 - скорость движения. Заметьте - время мы уже здесь ни на что не умножаем и нигде не используем каждый раз
+			CurrentFrame += 0.005 * time;
+			if (CurrentFrame > 3) CurrentFrame -= 3;
+			p.sprite.setTextureRect(IntRect(96 * int(CurrentFrame), 96, 96, 96)); //через объект p класса player меняем спрайт, делая анимацию (используя оператор точку)
 		}
-#endif // TELEPORT_HERO
 
-
-#ifdef MOVE_KEYBOARD_MOUSE 
-
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right) || sf::Keyboard::isKeyPressed(sf::Keyboard::D))
-		{
-			currentframe += 0.005 * time;//переменная для прохождения по кадрам переменная доходит до 6 
-			if (currentframe > 6)currentframe -= 6;//если пришли к кадру 6 то возвращаемся назад
-			herosprite.setTextureRect(sf::IntRect(40  * int(currentframe), 245, 40, 50));/*проходимся по координатам Х нашего прямоугольника текстуры
-			получается начинаем рисование с когда currentframe доходит до одного начинается новый кадр и т.д */
-			herosprite.move(0.1 * time, 0);//происходит само движение персонажа вправо
+		if ((Keyboard::isKeyPressed(Keyboard::Right) || (Keyboard::isKeyPressed(Keyboard::D)))) {
+			p.dir = 0; p.speed = 0.1;//направление вправо, см выше
+			CurrentFrame += 0.005 * time;
+			if (CurrentFrame > 3) CurrentFrame -= 3;
+			p.sprite.setTextureRect(IntRect(96 * int(CurrentFrame), 192, 96, 96));  //через объект p класса player меняем спрайт, делая анимацию (используя оператор точку)
 		}
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left) || sf::Keyboard::isKeyPressed(sf::Keyboard::A))
-		{  
-			currentframe += 0.005 * time;//переменная для прохождения по кадрам переменная доходит до 6 
-			if (currentframe > 6)currentframe -= 6;//если пришли к кадру 6 то возвращаемся назад
-			herosprite.setTextureRect(sf::IntRect(40 * int(currentframe)+40, 245, -40, 50));
-			/*начало отсчета х,у,ширина,высота.
-			проходимся по координатам Х нашего прямоугольника текстуры
-			получается начинаем рисование с когда currentframe доходит до одного начинается новый кадр и т.д
-			*/
-			herosprite.move(-0.1 * time, 0);}//происходит само движение персонажа влево
 
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up) || sf::Keyboard::isKeyPressed(sf::Keyboard::W)) { herosprite.move(0, -0.1 * time); }
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down) || sf::Keyboard::isKeyPressed(sf::Keyboard::S)) { herosprite.move(0, 0.1 * time); }
-		if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) { herosprite.setColor(sf::Color::Red); }
-		if (sf::Mouse::isButtonPressed(sf::Mouse::Right)) { herosprite.setColor(sf::Color::Blue); }
-		if (sf::Mouse::isButtonPressed(sf::Mouse::Middle)) { herosprite.setColor(sf::Color::Green); }
-#endif // MOVE_KEYBOARD_MOUSE
+		if ((Keyboard::isKeyPressed(Keyboard::Up) || (Keyboard::isKeyPressed(Keyboard::W)))) {
+			p.dir = 3; p.speed = 0.1;//направление вниз, см выше
+			CurrentFrame += 0.005 * time;
+			if (CurrentFrame > 3) CurrentFrame -= 3;
+			p.sprite.setTextureRect(IntRect(96 * int(CurrentFrame), 288, 96, 96));  //через объект p класса player меняем спрайт, делая анимацию (используя оператор точку)
+
+		}
+
+		if ((Keyboard::isKeyPressed(Keyboard::Down) || (Keyboard::isKeyPressed(Keyboard::S)))) { //если нажата клавиша стрелка влево или англ буква А
+			p.dir = 2; p.speed = 0.1;//направление вверх, см выше
+			CurrentFrame += 0.005 * time; //служит для прохождения по "кадрам". переменная доходит до трех суммируя произведение времени и скорости. изменив 0.005 можно изменить скорость анимации
+			if (CurrentFrame > 3) CurrentFrame -= 3; //проходимся по кадрам с первого по третий включительно. если пришли к третьему кадру - откидываемся назад.
+			p.sprite.setTextureRect(IntRect(96 * int(CurrentFrame), 0, 96, 96)); //проходимся по координатам Х. получается 96,96*2,96*3 и опять 96
+
+		}
+
+		p.update(time);//оживляем объект p класса Player с помощью времени sfml, передавая время в качестве параметра функции update. благодаря этому персонаж может двигаться
 
 
-
-		window.clear();//очищает окно
-		window.draw(herosprite);//рисует обьект
-		window.display();//
+		window.clear();
+		window.draw(p.sprite);//рисуем спрайт объекта p класса player
+		window.display();
 	}
 
 	return 0;
 }
-//sf::CircleShape shape(100.f);//собздание обьекта класса фигуры Круг 
-//shape.setFillColor(sf::Color::Green);//заливка обьекта зеленым цветом
