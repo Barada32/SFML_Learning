@@ -151,6 +151,7 @@
     <None Include="sfml-window-d-2.dll" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="mission.h" />
     <ClInclude Include="view.h" />
     <ClInclude Include="map.h" />
   </ItemGroup>

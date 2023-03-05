@@ -5,7 +5,7 @@
 #include <sstream>
 #include"map.h"//подключаем тайтл-сет массив с картой
 #include "view.h"//подключили код с видом камеры
-
+#include "mission.h"//подключаем миссию при нажатаии таб
 using namespace sf;//петушиное простанство имен
 
 
@@ -131,8 +131,20 @@ int main()
 	Font font;//шрифт 
 	font.loadFromFile("CyrilicOld.TTF");//передаем нашему шрифту файл шрифта
 	Text text("", font, 20);//создаем объект текст. закидываем в объект текст строку, шрифт, размер шрифта(в пикселях);//сам объект текст (не строка)
-	text.setFillColor(Color::Red);//покрасили текст в красный. если убрать эту строку, то по умолчанию он белый
-	text.setStyle(Text::Bold);//жирный текст.
+	text.setFillColor(Color::Black);//покрасили текст в красный. если убрать эту строку, то по умолчанию он белый
+	text.setStyle(Text::Regular);//жирный текст.
+	////////////////_______________МИССИЯ И ОПИСАНИЕ_____________////////////////////////////
+	bool showMissionText = true;//логическая переменная, отвечающая за появление текста миссии на экране
+
+	Image quest_image;
+	quest_image.loadFromFile("images/missionbg.jpg");
+	quest_image.createMaskFromColor(Color(0, 0, 0));
+	Texture quest_texture;
+	quest_texture.loadFromImage(quest_image);
+	Sprite s_quest;
+	s_quest.setTexture(quest_texture);
+	s_quest.setTextureRect(IntRect(0, 0, 340, 510));  //приведение типов, размеры картинки исходные
+	s_quest.setScale(0.6f, 0.6f);//чуть уменьшили картинку, => размер стал меньше
 	////////////////_______________Создаем текстуру карты_____________////////////////////////////
 
 	Image map_image;//объект изображения для карты
@@ -168,7 +180,32 @@ int main()
 			if (event.type == sf::Event::Closed)
 				window.close();
 		}
+		if (event.type == Event::KeyPressed)//событие нажатия клавиши
+			if ((event.key.code == Keyboard::Tab)) {//если клавиша ТАБ
 
+
+				switch (showMissionText)
+				{//переключатель, реагирующий на логическую переменную showMissionText
+
+				case true: {
+					std::ostringstream playerHealthString;//строка здоровья игрока
+					playerHealthString << p.health; //заносим в строку здоровье 
+					std::ostringstream task;//строка текста миссии
+					task << getTextMission(getCurrentMission(p.getplayercoordinateX()));//вызывается функция getTextMission (она возвращает текст миссии), которая принимает в качестве аргумента функцию getCurrentMission(возвращающую номер миссии), а уже эта ф-ция принимает в качестве аргумента функцию p.getplayercoordinateX() (эта ф-ция возвращает Икс координату игрока)
+					text.setString("Здоровье: " + playerHealthString.str() + "\n" + task.str());//задаем
+					text.setPosition(view.getCenter().x + 125, view.getCenter().y - 130);//позиция всего этого текстового блока
+					s_quest.setPosition(view.getCenter().x + 115, view.getCenter().y - 130);//позиция фона для блока
+					showMissionText = false;//эта строка позволяет убрать все что мы вывели на экране
+					break;//выходим , чтобы не выполнить условие "false" (которое ниже)
+				}
+				case false: {
+					text.setString("");//если не нажата клавиша таб, то весь этот текст пустой
+					showMissionText = true;// а эта строка позволяет снова нажать клавишу таб и получить вывод на экран
+					break;
+				}
+				}
+
+			}
 
 		///////////////////////////////////////////Управление персонажем с анимацией////////////////////////////////////////////////////////////////////////
 		if (p.life)
@@ -233,8 +270,8 @@ int main()
 		text.setString("Собрано камней:" + playerScoreString.str());//задаем строку тексту и вызываем сформированную выше строку методом .str() 
 		text.setPosition(view.getCenter().x - 5, view.getCenter().y - 200);//задаем позицию текста, отступая от центра камеры
 		window.draw(text);//рисую этот текст
-		
-		
+
+
 		std::ostringstream playerHealthString, gameTimeString;    // объявили переменную здоровья и времени
 		playerHealthString << p.health; gameTimeString << gameTime;		//формируем строку
 		text.setString("Здоровье: " + playerHealthString.str() + "\nВремя игры: " + gameTimeString.str());//задаем строку тексту и вызываем сформированную выше строку методом .str()
