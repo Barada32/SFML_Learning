@@ -114,7 +114,7 @@ int main()
 	Font font;
 	font.loadFromFile("CyrilicOld.ttf");
 	Text text("", font, 20);
-	text.setColor(Color::Black);
+	text.setFillColor(Color::Black); (Color::Black);
 
 
 	Image map_image;
