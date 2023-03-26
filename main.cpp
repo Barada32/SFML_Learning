@@ -126,7 +126,7 @@ public:
 };
 
 
-
+ 
 
 //#define MOVE_SELECTED_WITH_MOUSE //вариативно для разных целей
 #define TAB_PRESSED_MISSION_SCORE_HEALTH_REALISE
