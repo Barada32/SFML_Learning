@@ -7,6 +7,7 @@
 #include "view.h"//подключили код с видом камеры
 #include "mission.h"//подключаем миссию при нажатаии таб
 using namespace sf;//петушиное простанство имен
+using std::cin;
 using std::cout;
 using std::endl;
 
@@ -127,9 +128,19 @@ public:
 
 //#define MOVE_SELECTED_WITH_MOUSE //вариативно для разных целей
 #define TAB_PRESSED_MISSION_SCORE_HEALTH_REALISE
-#define MISSION_SPRITE
+#define MAP_TEXTURE
+#define MISSION_SPRITE_PART_1
+#define MISSION_SPRITE_PART_2
 #define FONTS
-
+#define VARIABLES
+#define GAME_SPEED
+#define PLAYER_MOUSE_MOOVE_PART_1
+#define PLAYER_MOUSE_MOOVE_PART_2
+#define PLAYER_WSAD_MOVING
+#define MOUSE_SCROLLING_WINDOW
+#define CREATING_MAP_LEVELS
+#define CAMERA_VIEW
+#define MOUSE_CURSOR_VECTOR_POSITION
 int main()
 {
 	randomMapGenerate();//рандомно генерируем камини и бонусы
@@ -139,7 +150,7 @@ int main()
 	////////////////_______________Управление камерой_____________////////////////////////////
 	view.reset(sf::FloatRect(0, 0, 640, 480));//размер "вида" камеры при создании объекта вида камеры. (потом можем менять как хотим) Что то типа инициализации.
 
-	
+
 #ifdef FONTS
 	Font font;//шрифт 
 	font.loadFromFile("CyrilicOld.ttf");//передаем нашему шрифту файл шрифта
@@ -149,10 +160,8 @@ int main()
 #endif //_______________ШРИФТ_____________//
 
 
-	
-
-#ifdef MISSION_SPRITE
-			///для работы с миссией из свитка по нажатию tab
+#ifdef MISSION_SPRITE_PART_1
+	///для работы с миссией из свитка по нажатию tab
 	bool showMissionText = true;//логическая переменная, отвечающая за появление текста миссии на экране
 	Image quest_image;
 	quest_image.loadFromFile("images/missionbg.jpg");
@@ -166,59 +175,54 @@ int main()
 #endif //_______________СПРАЙТ И РАЗМЕРЫ СВИТКА МИССИИ_____________//
 
 
-
-
-	////////////////_______________Создаем текстуру карты_____________////////////////////////////
-
+#ifdef MAP_TEXTURE
 	Image map_image;//объект изображения для карты
 	map_image.loadFromFile("images/map.png");//загружаем файл для карты
 	Texture map;//текстура карты
 	map.loadFromImage(map_image);//заряжаем текстуру картинкой
 	Sprite s_map;//создаём спрайт для карты
-	s_map.setTexture(map);//заливаем текстуру спрайтом
+	s_map.setTexture(map);//заливаем текстуру спрайтом  
+#endif //_______________Создаем текстуру карты_____________//
 
 
-
-
-
-
-	//переменные времени
-
-	float CurrentFrame = 0;//хранит текущий кадр
+#ifdef VARIABLES
+	float CurrentFrame = 0;//переменная хранит текущий кадр
 	Clock clock;
 	Clock gameTimeClock;//переменная игрового времени, будем здесь хранить время игры 
-	int gameTime = 0;//объявили игровое время, инициализировали.
-	int createObjectForMapTimer = 0;//создаем таймер для рандома
-
-
+	int gameTime = 0;//переменная игровое время, инициализировали.
+	int createObjectForMapTimer = 0;//переменная таймер для рандома
 
 
 	//переменные для перетаскивания персонажа
 	bool isMove = false;//переменная для щелчка мыши по спрайту
-	float dX = 0;//корректировка нажатия по х
-	float dY = 0;//по у
+	float dX = 0;//переменная корректировка нажатия по х
+	float dY = 0;//переменная по у
 
 	//переменные для  движения по щелчку по карте как в RTS
-	int tempX = 0;//временная коорд Х.Снимаем ее после нажатия прав клав мыши
-	int tempY = 0;//коорд Y
-	float distance = 0;//это расстояние от объекта до тыка курсора
+	int tempX = 0;//временная переменная коорд Х.Снимаем ее после нажатия прав клав мыши
+	int tempY = 0;//временная переменная коорд Y 
+	float distance = 0;//переменная расстояния от объекта до тыка курсора  
+#endif //_______________переменные_____________//
+
+
 
 	Player p("hero.png", 250, 250, 40.0, 50.0);//создаем объект p класса player,задаем "hero.png" как имя файла+расширение, далее координата Х,У, ширина, высота.
 
 	while (window.isOpen())
 	{
-
+#ifdef GAME_SPEED
 		float time = clock.getElapsedTime().asMicroseconds();//задаем время в микросекундах
 		if (p.life) gameTime = gameTimeClock.getElapsedTime().asSeconds();//игровое время в секундах идёт вперед, пока жив игрок, перезагружать как time его не надо. оно не обновляет логику игры
 		clock.restart();
 		time = time / 800;//привязка по времени и регулятор скорости движения персонажа
+#endif //скорость игры
 
-
-		//////////////////////вектора для перетаскивания персонажа мышью_______/////////////
+#ifdef MOUSE_CURSOR_VECTOR_POSITION
 		Vector2i pixelPos = Mouse::getPosition(window);//забираем коорд курсора
 		Vector2f pos = window.mapPixelToCoords(pixelPos);//переводим их в игровые (уходим от коорд окна)
 		//std::cout << pixelPos.x << "\n";//смотрим на координату Х позиции курсора в консоли (она не будет больше ширины окна)
 		//std::cout << pos.x << "\n";//смотрим на Х,которая преобразовалась в мировые координаты
+#endif // вектора для перетаскивания персонажа мышью_
 
 
 		Event event;
@@ -226,7 +230,8 @@ int main()
 		{
 			if (event.type == sf::Event::Closed)
 				window.close();
-			//////////////////////____реализация выбора персонажа_______/////////////
+		
+#ifdef PLAYER_MOUSE_MOOVE_PART_1
 			if (event.type == Event::MouseButtonPressed)//если нажата клавиша мыши
 				if (event.key.code == Mouse::Left) {//а именно левая
 					if (p.sprite.getGlobalBounds().contains(pos.x, pos.y))//и при этом координата курсора попадает в спрайт
@@ -248,10 +253,7 @@ int main()
 
 					}
 
-
-
-
-
+#endif //____реализация движения  персонажа по клику курсору 
 
 #ifdef MOVE_SELECTED_WITH_MOUSE
 			if (event.type == Event::MouseButtonPressed)//если нажата клавиша мыши
@@ -275,9 +277,7 @@ int main()
 				p.x = pos.x - dX;//двигаем спрайт по Х
 				p.y = pos.y - dY;//двигаем по Y	
 			}
-#endif //////////////////////____реализация события по перетаскиванию_______/////////////
-
-
+#endif //____реализация события по перетаскиванию персонажа мышкой
 
 #ifdef TAB_PRESSED_MISSION_SCORE_HEALTH_REALISE
 			if (event.type == Event::KeyPressed)//событие нажатия клавиши
@@ -305,11 +305,11 @@ int main()
 					}
 					}
 				}
-#endif //____реализация события по нажатию клавиши tab
-
-			
+#endif //____реализация события по нажатию клавиши TAB
 		}
-		if (p.isMove) {
+#ifdef PLAYER_MOUSE_MOOVE_PART_2
+		if (p.isMove)
+		{
 			distance = sqrt((tempX - p.x) * (tempX - p.x) + (tempY - p.y) * (tempY - p.y));//считаем дистанцию (расстояние от точки А до точки Б). используя формулу длины вектора
 
 			if (distance > 2) {//этим условием убираем дергание во время конечной позиции спрайта
@@ -319,118 +319,127 @@ int main()
 			}
 			else { p.isMove = false; std::cout << "priehali\n"; }//говорим что уже никуда не идем и выводим веселое сообщение в консоль
 		}
+#endif //____реализация движения  персонажа по клику курсору 
 
-			///////////////////////////////////////////Управление персонажем с анимацией////////////////////////////////////////////////////////////////////////
-			if (p.life)
+#ifdef PLAYER_WSAD_MOVING
+		if (p.life)
+		{
+			if ((Keyboard::isKeyPressed(Keyboard::A))) {
+				p.dir = 1; p.speed = 0.1;//dir =1 - направление вверх, speed =0.1 - скорость движения. Заметьте - время мы уже здесь ни на что не умножаем и нигде не используем каждый раз
+				CurrentFrame += 0.005 * time;
+				if (CurrentFrame > 3) CurrentFrame -= 3;
+				p.sprite.setTextureRect(IntRect(40 * int(CurrentFrame) + 40, 245, -40, 50));//через объект p класса player меняем спрайт, делая анимацию (используя оператор точку)
+			}
+
+			if ((Keyboard::isKeyPressed(Keyboard::D))) {
+				p.dir = 0; p.speed = 0.1;//направление вправо, см выше
+				CurrentFrame += 0.005 * time;
+				if (CurrentFrame > 3) CurrentFrame -= 3;
+				p.sprite.setTextureRect(IntRect(40 * int(CurrentFrame), 245, 40, 50));  //через объект p класса player меняем спрайт, делая анимацию (используя оператор точку)
+			}
+
+			if ((Keyboard::isKeyPressed(Keyboard::W)))
 			{
-				if ((Keyboard::isKeyPressed(Keyboard::A))) {
-					p.dir = 1; p.speed = 0.1;//dir =1 - направление вверх, speed =0.1 - скорость движения. Заметьте - время мы уже здесь ни на что не умножаем и нигде не используем каждый раз
-					CurrentFrame += 0.005 * time;
-					if (CurrentFrame > 3) CurrentFrame -= 3;
-					p.sprite.setTextureRect(IntRect(40 * int(CurrentFrame) + 40, 245, -40, 50));//через объект p класса player меняем спрайт, делая анимацию (используя оператор точку)
-				}
-
-				if ((Keyboard::isKeyPressed(Keyboard::D))) {
-					p.dir = 0; p.speed = 0.1;//направление вправо, см выше
-					CurrentFrame += 0.005 * time;
-					if (CurrentFrame > 3) CurrentFrame -= 3;
-					p.sprite.setTextureRect(IntRect(40 * int(CurrentFrame), 245, 40, 50));  //через объект p класса player меняем спрайт, делая анимацию (используя оператор точку)
-				}
-
-				if ((Keyboard::isKeyPressed(Keyboard::W)))
-				{
-					p.dir = 3; p.speed = 0.1;//направление вниз, см выше
-					CurrentFrame += 0.005 * time;
-					if (CurrentFrame > 3) CurrentFrame -= 3;
-					p.sprite.setTextureRect(IntRect(40 * int(CurrentFrame), 245, 40, 50));  //через объект p класса player меняем спрайт, делая анимацию (используя оператор точку)
-
-				}
-
-				if ((Keyboard::isKeyPressed(Keyboard::S))) { //если нажата клавиша стрелка влево или англ буква А
-					p.dir = 2; p.speed = 0.1;//направление вверх, см выше
-					CurrentFrame += 0.005 * time; //служит для прохождения по "кадрам". переменная доходит до трех суммируя произведение времени и скорости. изменив 0.005 можно изменить скорость анимации
-					if (CurrentFrame > 3) CurrentFrame -= 3; //проходимся по кадрам с первого по третий включительно. если пришли к третьему кадру - откидываемся назад.
-					p.sprite.setTextureRect(IntRect(40 * int(CurrentFrame), 245, 40, 50)); //проходимся по координатам Х. получается 96,96*2,96*3 и опять 96
-
-				}
-
-				//	getplayercoordinateforview(p.getplayercoordinateX(), p.getplayercoordinateY());//слежение камеры за персом
-			}
-
-			//////////////////////____Скролинг мышкой относительно окна________////////////////////////
-			sf::Vector2i localPosition = Mouse::getPosition(window);//заносим в вектор координаты мыши относительно окна (х,у)
-			std::cout << "locPos " << localPosition.x << "\n";//посмотрите как себя ведет позиция курсора Х
-
-			createObjectForMapTimer += time;//наращиваем таймер
-			if (createObjectForMapTimer > 6000) {
-				randomMapGenerate();//генерация случ камней
-				createObjectForMapTimer = 0;//обнуляем таймер
-			}
-
-			if (localPosition.x < 3) { view.move(-0.2 * time, 0); }//если пришли курсором в левый край экрана,то двигаем камеру влево
-			if (localPosition.x > window.getSize().x - 3) { view.move(0.2 * time, 0); }//правый край-вправо
-			if (localPosition.y > window.getSize().y - 3) { view.move(0, 0.2 * time); }//нижний край - вниз
-			if (localPosition.y < 3) { view.move(0, -0.2 * time); }//верхний край - вверх
-
-
-
-			p.update(time);//оживляем объект p класса Player с помощью времени sfml, передавая время в качестве параметра функции update. благодаря этому персонаж может двигаться
-
-			viewmap(time);//функция скроллинга карты, передаем ей время sfml
-
-
-			window.clear(Color(128, 106, 89));//обрисовка краев карты
-			///////____управление камерой____//////
-			window.setView(view);//"оживляем" камеру в окне sfml
-
-			changeview();//прикалываемся с камерой
-
-			/////////////////////////////Рисуем карту/////////////////////
-			if ((getCurrentMission(p.getplayercoordinateX())) == 0) { //Если текущая миссия 0, то рисуем карту вот так
-				for (int i = 0; i < HEIGHT_MAP; i++)
-					for (int j = 0; j < WIDTH_MAP; j++)
-					{
-						if (TileMap[i][j] == ' ')  s_map.setTextureRect(IntRect(0, 0, 32, 32));
-						if (TileMap[i][j] == 's')  s_map.setTextureRect(IntRect(32, 0, 32, 32));
-						if ((TileMap[i][j] == '0')) s_map.setTextureRect(IntRect(64, 0, 32, 32));
-						if ((TileMap[i][j] == 'f')) s_map.setTextureRect(IntRect(96, 0, 32, 32));
-						if ((TileMap[i][j] == 'h')) s_map.setTextureRect(IntRect(128, 0, 32, 32));
-						s_map.setPosition(j * 32, i * 32);
-
-						window.draw(s_map);
-					}
-			}
-
-			if ((getCurrentMission(p.getplayercoordinateX())) >= 1) { //Если текущая миссия 1, то рисуем карту вот так
-				for (int i = 0; i < HEIGHT_MAP; i++)
-					for (int j = 0; j < WIDTH_MAP; j++)
-					{
-						if (TileMap[i][j] == ' ')  s_map.setTextureRect(IntRect(64, 0, 32, 32));//для примера поменял местами вывод спрайта для этого символа и..
-						if (TileMap[i][j] == 's')  s_map.setTextureRect(IntRect(32, 0, 32, 32));
-						if ((TileMap[i][j] == '0')) s_map.setTextureRect(IntRect(0, 0, 32, 32));//и для вот этого. логически-игровой смысл их остался таким же
-						if ((TileMap[i][j] == 'f')) s_map.setTextureRect(IntRect(96, 0, 32, 32));
-						if ((TileMap[i][j] == 'h')) s_map.setTextureRect(IntRect(128, 0, 32, 32));
-						s_map.setPosition(j * 32, i * 32);
-
-						window.draw(s_map);
-					}
-			}
-
-			if (!showMissionText) {
-				text.setPosition(view.getCenter().x + 125, view.getCenter().y - 130);//позиция всего этого текстового блока
-				s_quest.setPosition(view.getCenter().x + 115, view.getCenter().y - 130);//позиция фона для блока			
-				window.draw(s_quest); window.draw(text); //рисуем спрайт свитка (фон для текста миссии). а затем и текст. все это завязано на логическую переменную, которая меняет свое состояние от нажатия клавиши ТАБ
-
-
-
-
+				p.dir = 3; p.speed = 0.1;//направление вниз, см выше
+				CurrentFrame += 0.005 * time;
+				if (CurrentFrame > 3) CurrentFrame -= 3;
+				p.sprite.setTextureRect(IntRect(40 * int(CurrentFrame), 245, 40, 50));  //через объект p класса player меняем спрайт, делая анимацию (используя оператор точку)
 
 			}
 
+			if ((Keyboard::isKeyPressed(Keyboard::S))) { //если нажата клавиша стрелка влево или англ буква А
+				p.dir = 2; p.speed = 0.1;//направление вверх, см выше
+				CurrentFrame += 0.005 * time; //служит для прохождения по "кадрам". переменная доходит до трех суммируя произведение времени и скорости. изменив 0.005 можно изменить скорость анимации
+				if (CurrentFrame > 3) CurrentFrame -= 3; //проходимся по кадрам с первого по третий включительно. если пришли к третьему кадру - откидываемся назад.
+				p.sprite.setTextureRect(IntRect(40 * int(CurrentFrame), 245, 40, 50)); //проходимся по координатам Х. получается 96,96*2,96*3 и опять 96
 
-			window.draw(p.sprite);//рисуем спрайт объекта p класса player
-			window.display();
+			}
+
+			//	getplayercoordinateforview(p.getplayercoordinateX(), p.getplayercoordinateY());//слежение камеры за персом
+		}
+#endif //____Управление персонажем с анимацией
+	
+#ifdef MOUSE_SCROLLING_WINDOW
+		sf::Vector2i localPosition = Mouse::getPosition(window);//заносим в вектор координаты мыши относительно окна (х,у)
+		std::cout << "locPos " << localPosition.x << "\n";//посмотрите как себя ведет позиция курсора Х
+
+		createObjectForMapTimer += time;//наращиваем таймер
+		if (createObjectForMapTimer > 6000) {
+			randomMapGenerate();//генерация случ камней
+			createObjectForMapTimer = 0;//обнуляем таймер
 		}
 
-		return 0;
+		if (localPosition.x < 3) { view.move(-0.2 * time, 0); }//если пришли курсором в левый край экрана,то двигаем камеру влево
+		if (localPosition.x > window.getSize().x - 3) { view.move(0.2 * time, 0); }//правый край-вправо
+		if (localPosition.y > window.getSize().y - 3) { view.move(0, 0.2 * time); }//нижний край - вниз
+		if (localPosition.y < 3) { view.move(0, -0.2 * time); }//верхний край - вверх
+
+
+
+#endif //____Скролинг мышкой относительно окна
+
+		
+
+		window.clear(Color(128, 106, 89));//обрисовка краев карты
+		
+#ifdef CAMERA_VIEW
+		window.setView(view);//"оживляем" камеру в окне sfml
+
+		changeview();//прикалываемся с камерой  
+#endif //____управление камерой____//
+
+
+		
+#ifdef CREATING_MAP_LEVELS
+		if ((getCurrentMission(p.getplayercoordinateX())) == 0) { //Если текущая миссия 0, то рисуем карту вот так
+			for (int i = 0; i < HEIGHT_MAP; i++)
+				for (int j = 0; j < WIDTH_MAP; j++)
+				{
+					if (TileMap[i][j] == ' ')  s_map.setTextureRect(IntRect(0, 0, 32, 32));
+					if (TileMap[i][j] == 's')  s_map.setTextureRect(IntRect(32, 0, 32, 32));
+					if ((TileMap[i][j] == '0')) s_map.setTextureRect(IntRect(64, 0, 32, 32));
+					if ((TileMap[i][j] == 'f')) s_map.setTextureRect(IntRect(96, 0, 32, 32));
+					if ((TileMap[i][j] == 'h')) s_map.setTextureRect(IntRect(128, 0, 32, 32));
+					s_map.setPosition(j * 32, i * 32);
+
+					window.draw(s_map);
+				}
+		}
+
+		if ((getCurrentMission(p.getplayercoordinateX())) >= 1) { //Если текущая миссия 1, то рисуем карту вот так
+			for (int i = 0; i < HEIGHT_MAP; i++)
+				for (int j = 0; j < WIDTH_MAP; j++)
+				{
+					if (TileMap[i][j] == ' ')  s_map.setTextureRect(IntRect(64, 0, 32, 32));//для примера поменял местами вывод спрайта для этого символа и..
+					if (TileMap[i][j] == 's')  s_map.setTextureRect(IntRect(32, 0, 32, 32));
+					if ((TileMap[i][j] == '0')) s_map.setTextureRect(IntRect(0, 0, 32, 32));//и для вот этого. логически-игровой смысл их остался таким же
+					if ((TileMap[i][j] == 'f')) s_map.setTextureRect(IntRect(96, 0, 32, 32));
+					if ((TileMap[i][j] == 'h')) s_map.setTextureRect(IntRect(128, 0, 32, 32));
+					s_map.setPosition(j * 32, i * 32);
+
+					window.draw(s_map);
+				}
+		}
+#endif //Рисуем карту в зависимости от уровней//
+
+		p.update(time);//оживляем объект p класса Player с помощью времени sfml, передавая время в качестве параметра функции update. благодаря этому персонаж может двигаться
+
+		viewmap(time);//функция скроллинга карты, передаем ей время sfml
+
+
+			
+#ifdef MISSION_SPRITE_PART_2
+		if (!showMissionText)
+		{
+			text.setPosition(view.getCenter().x + 125, view.getCenter().y - 130);//позиция всего этого текстового блока
+			s_quest.setPosition(view.getCenter().x + 115, view.getCenter().y - 130);//позиция фона для блока			
+			window.draw(s_quest); window.draw(text); //рисуем спрайт свитка (фон для текста миссии). а затем и текст. все это завязано на логическую переменную, которая меняет свое состояние от нажатия клавиши ТАБ
+		}
+#endif // местоположение свитка по нажатию TAB 
+
+		window.draw(p.sprite);//рисуем спрайт объекта p класса player
+		window.display();
 	}
+
+	return 0;
+}
